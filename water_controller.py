@@ -7,7 +7,6 @@ from datetime import timedelta,datetime
 
 logging.basicConfig(level=config.log_level, format=config.log_format)
 log = logging.getLogger("water-controller")
-log.info("Starting water controller")
 
 class Should_I_Water_Plugin(object):
     def __init__(self):
@@ -131,6 +130,7 @@ class Test_Zone(object):
             sys.exit()
 
 if __name__== "__main__":
+    log.info("Starting water controller")
     import optparse
     parser = optparse.OptionParser("usage: water-controller.py --test zone_name")
     parser.add_option("-t", "--test", dest="test_zone",
