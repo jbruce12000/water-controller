@@ -18,10 +18,18 @@ is_sun_up = ('should_i_water_plugins','Sun_Check',
          'start'             : [ 'sunrise', { 'hours': +1 }],
          'end'               : [ 'sunset', { 'hours': -1 }] })
 
+# only water during hotest four hours of the day
+is_hotest_part_of_day = ('should_i_water_plugins','Sun_Check',
+        {'latitude'          : 33.858740179964144,
+         'longitude'         : -84.2213734421551,
+         'start'             : [ 'noon', { 'hours': -1 }],
+         'end'               : [ 'noon', { 'hours': +3 }] })
+
+
 always_water = ('should_i_water_plugins','Always_Water',{})
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ always_water, is_sun_up ]
+should_i_water_plugins1 = [ always_water, is_hotest_part_of_day ]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})
