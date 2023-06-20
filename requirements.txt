@@ -1,3 +1,5 @@
 meteostat
 apscheduler
 Adafruit-Blinka
+astral
+timezonefinder

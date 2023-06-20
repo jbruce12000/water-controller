@@ -11,19 +11,26 @@ rained_in_tucker = ('should_i_water_plugins','Meteostat_Rain_Check',
          'rain_search_hours' : 24,
          'rain_limit_mm'     : 5 } )
 
+# only water one hour after sunrise to one hour before sundown
+is_sun_up = ('should_i_water_plugins','Sun_Check',
+        {'latitude'          : 33.858740179964144,
+         'longitude'         : -84.2213734421551,
+         'start'             : [ 'sunrise', { 'hours': +1 }],
+         'end'               : [ 'sunset', { 'hours': -1 }] })
+
 always_water = ('should_i_water_plugins','Always_Water',{})
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ always_water ]
+should_i_water_plugins1 = [ always_water, is_sun_up ]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})
 #import board
 #controller2 = ('blinka','Blinka_GPIO', {'output_pin': board.D23 })
 
-# water every 2 minutes for 22 secs between 8am and 3pm
+# water every minute for 22 secs between 8am and 3pm
 duration1 = {'seconds' : 22 }
-cron1 = {'hour':'8-14', 'minute':'*/2','misfire_grace_time':5 }
+cron1 = {'hour':'8-14', 'minute':'*/1','misfire_grace_time':5 }
 # apscheduler jobs scaling tested with 100 zones
 scheduler1 = ('scheduler_plugins','Cron', duration1, cron1)
 
