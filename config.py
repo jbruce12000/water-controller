@@ -25,7 +25,6 @@ is_hotest_part_of_day = ('should_i_water_plugins','Sun_Check',
          'start'             : [ 'noon', { 'hours': -1 }],
          'end'               : [ 'noon', { 'hours': +3 }] })
 
-
 always_water = ('should_i_water_plugins','Always_Water',{})
 never_water = ('should_i_water_plugins','Never_Water',{})
 
