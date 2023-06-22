@@ -9,8 +9,8 @@ logging.basicConfig(level=config.log_level, format=config.log_format)
 log = logging.getLogger("water-controller")
 
 class Should_I_Water_Plugin(object):
-    def __init__(self):
-        pass
+    def __init__(self,zone):
+        self.zone = zone
     def water_now(self):
         # children must implement this
         # must return True or False

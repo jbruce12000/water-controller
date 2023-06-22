@@ -2,14 +2,16 @@ from water_controller import Should_I_Water_Plugin, log
 
 class Always_Water(Should_I_Water_Plugin):
     def __init__(self,zone,opts):
-        super().__init__()
+        super().__init__(zone)
     def water_now(self):
+        log.info("%s - always water" % (self.zone))
         return True
 
 class Never_Water(Should_I_Water_Plugin):
     def __init__(self,zone,opts):
-        super().__init__()
+        super().__init__(zone)
     def water_now(self):
+        log.info("%s - never water" % (self.zone))
         return False
 
 ##############################################################################
@@ -26,8 +28,7 @@ class Never_Water(Should_I_Water_Plugin):
 # for a different limit etc.
 class Meteostat_Rain_Check(Should_I_Water_Plugin):
     def __init__(self,zone,opts):
-        super().__init__()
-        self.zone = zone
+        super().__init__(zone)
         self.lat = opts["latitude"]
         self.lon = opts["longitude"]
         self.rain_search_hours = opts["rain_search_hours"]
@@ -72,8 +73,7 @@ class Meteostat_Rain_Check(Should_I_Water_Plugin):
 # minutes or seconds etc.
 class Sun_Check(Should_I_Water_Plugin):
     def __init__(self,zone,opts):
-        super().__init__()
-        self.zone = zone
+        super().__init__(zone)
         self.lat = opts["latitude"]
         self.lon = opts["longitude"]
         self.start = opts['start'][0]
