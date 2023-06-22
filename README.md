@@ -68,3 +68,26 @@ Controllers turn the water on and off. Each controller is connected to one or mo
 
 Blinka controllers include a vast [list](https://circuitpython.org/blinka) of single board computers.
 
+## Installation Instructions
+
+### Installing Operating System
+
+    todo
+
+### Installing Software
+
+    git clone git@github.com:jbruce12000/water-controller.git
+    cd water-controller
+    virtualenv venv
+    source venv/bin/activate
+    pip install -r ./requirements.txt
+
+### Starting Water Controller at Boot Time
+
+    todo
+
+### Editing Configuration
+
+    todo
+
+
