@@ -5,7 +5,7 @@ log_format = '%(asctime)s %(levelname)s %(name)s: %(message)s'
 
 # check meteostat for location nearest me and if it has rained 5mm or more
 # in the past 24 hours, skip the current watering
-rained_in_tucker = ('should_i_water_plugins','Meteostat_Rain_Check',
+rained_lately = ('should_i_water_plugins','Meteostat_Rain_Check',
         {'latitude'          : 33.858740179964144,
          'longitude'         : -84.2213734421551,
          'rain_search_hours' : 24,
@@ -28,7 +28,7 @@ is_hotest_part_of_day = ('should_i_water_plugins','Sun_Check',
 always_water = ('should_i_water_plugins','Always_Water',{})
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ always_water, is_hotest_part_of_day ]
+should_i_water_plugins1 = [ always_water, rained_lately, is_hotest_part_of_day ]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})
