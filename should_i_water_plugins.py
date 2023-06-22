@@ -15,7 +15,7 @@ class Never_Water(Should_I_Water_Plugin):
 ##############################################################################
 # add something like this to config.py
 #
-#    ('meteostat_rain_plugin','Meteostat_Rain_Check',
+# is_my_town_wet = ('meteostat_rain_plugin','Meteostat_Rain_Check',
 #        {'latitude'          : 33.858740179964144,
 #         'longitude'         : -84.2213734421551,
 #         'rain_search_hours' : 24,
