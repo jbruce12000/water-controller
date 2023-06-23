@@ -17,16 +17,17 @@ class Should_I_Water_Plugin(object):
         pass
 
 class Controller_Plugin(object):
-    def __init__(self):
-        pass
+    def __init__(self,zone):
+        self.zone = zone
+        # this turns water off on init which may not be needed
+        # depending on your set up
+        self.water_off()
     def water_on(self):
-        # children must implement this
-        # must turn water on
-        pass
+        # children must implement this to turn water on
+        log.info("%s - water on" % (self.zone))
     def water_off(self):
-        # children must implement this
-        # must turn water on
-        pass
+        # children must implement this to turn water off
+        log.info("%s - water off" % (self.zone))
 
 class Scheduler_Plugin(object):
     def __init__(self):
@@ -84,13 +85,12 @@ class Zone(object):
             log.info("%s - water skipping" % self)
             return
         self.controller.water_on()
-        log.info("%s - water on duration=%ds" % (self,timedelta(**self.duration).seconds))
+        log.info("%s - duration=%ds" % (self,timedelta(**self.duration).seconds))
         time.sleep(timedelta(**self.duration).seconds)
         self.water_off()
 
     def water_off(self):
         self.controller.water_off()
-        log.info("%s - water off" % self)
 
     def __str__(self):
         return "zone %s" % self.name
@@ -122,7 +122,6 @@ class Test_Zone(object):
                     {'seconds' : 10 }, 
                     {'seconds' : 20, 'start_date': datetime.now()+timedelta(seconds=1)})
                 always_water = ('should_i_water_plugins','Always_Water',{})
-                #import pdb; pdb.set_trace()
                 self.zone = Zone((z_config[0], z_config[1],
                     test_scheduler, always_water))
         if self.zone is None:
