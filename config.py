@@ -3,32 +3,46 @@ import logging
 log_level = logging.INFO
 log_format = '%(asctime)s %(levelname)s %(name)s: %(message)s'
 
+# location is used in a few plugins
+my_lat = 33.858740179964144
+my_lon = -84.2213734421551
+
 # check meteostat for location nearest me and if it has rained 5mm or more
 # in the past 24 hours, skip the current watering
 rained_lately = ('should_i_water_plugins','Meteostat_Rain_Check',
-        {'latitude'          : 33.858740179964144,
-         'longitude'         : -84.2213734421551,
+        {'latitude'          : my_lat,
+         'longitude'         : my_lon,
          'rain_search_hours' : 24,
          'rain_limit_mm'     : 5 } )
 
+# check meteostat for location nearest me and if avg relative humidity
+# over the past search_hours is above threshold ,skip the current watering
+is_humidity_low = ('should_i_water_plugins','Meteostat_Humidity_Check',
+        {'latitude'          : my_lat,
+         'longitude'         : my_lon,
+         'search_hours'      : 1,
+         'avg_humidity_below': 97 } )
+
+
+
 # only water one hour after sunrise to one hour before sundown
 is_sun_up = ('should_i_water_plugins','Sun_Check',
-        {'latitude'          : 33.858740179964144,
-         'longitude'         : -84.2213734421551,
+        {'latitude'          : my_lat,
+         'longitude'         : my_lon,
          'start'             : [ 'sunrise', { 'hours': +1 }],
          'end'               : [ 'sunset', { 'hours': -1 }] })
 
 # only water during hotest four hours of the day
 is_hotest_part_of_day = ('should_i_water_plugins','Sun_Check',
-        {'latitude'          : 33.858740179964144,
-         'longitude'         : -84.2213734421551,
+        {'latitude'          : my_lat,
+         'longitude'         : my_lon,
          'start'             : [ 'noon', { 'hours': -1 }],
          'end'               : [ 'noon', { 'hours': +3 }] })
 
 always_water = ('should_i_water_plugins','Always_Water',{})
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ always_water, rained_lately, is_hotest_part_of_day ]
+should_i_water_plugins1 = [ always_water, is_hotest_part_of_day, rained_lately, is_humidity_low ]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})
@@ -53,14 +67,15 @@ multi_cron = [cron1, cron2]
 schedule3 = ('scheduler_plugins','Cron', duration2, multi_cron) 
 
 # water every minute for 10 secs
-#scheduler3 = ('scheduler_plugins','Interval', 
-#        {'seconds' : 10 },
-#        { 'minutes' : 1 })
+every_minute = ('scheduler_plugins','Interval', 
+        { 'seconds' : 10 },
+        { 'minutes' : 1 })
 
 #scheduler2 = ('dummy_scheduler_plugin','Dummy_Scheduler', {})
 
 zones = [ ('box1',controller1, schedule3, should_i_water_plugins1), 
-          ('box2',controller1, schedule3, never_water), 
+          ('box2',controller1, schedule3, should_i_water_plugins2), 
+          ('box3',controller1, every_minute, is_sun_up), 
         ]
 
 #zones = [ ('box1',controller1, scheduler1, should_i_water_plugins1) ]

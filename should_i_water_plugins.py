@@ -1,4 +1,7 @@
-from water_controller import Should_I_Water_Plugin, log
+from water_controller import Should_I_Water_Plugin, log, Helpers
+
+# load really slow stuff just once
+helper = Helpers()
 
 class Always_Water(Should_I_Water_Plugin):
     def __init__(self,zone,opts):
@@ -17,7 +20,7 @@ class Never_Water(Should_I_Water_Plugin):
 ##############################################################################
 # add something like this to config.py
 #
-# is_my_town_wet = ('meteostat_rain_plugin','Meteostat_Rain_Check',
+# is_my_town_wet = ('should_i_water_plugins','Meteostat_Rain_Check',
 #        {'latitude'          : 33.858740179964144,
 #         'longitude'         : -84.2213734421551,
 #         'rain_search_hours' : 24,
@@ -44,12 +47,12 @@ class Meteostat_Rain_Check(Should_I_Water_Plugin):
         # Get hourly data
         data = Hourly(self.station, start, end)
         data = data.fetch()
-        # print(data)
+        #print(data)
 
         if (data.prcp.sum() >= self.rain_limit):
-            log.info("%s - rainfall of %dmm in past %d hours at or over %dmm limit" %(self.zone, data.prcp.sum(), self.rain_search_hours, self.rain_limit))
+            log.info("%s - rainfall of %.2fmm in past %d hours at or over %.2fmm limit" %(self.zone, data.prcp.sum(), self.rain_search_hours, self.rain_limit))
             return False
-        log.info("%s - rainfall of %dmm in past %d hours below %dmm limit" %(self.zone, data.prcp.sum(), self.rain_search_hours, self.rain_limit))
+        log.info("%s - rainfall of %.2fmm in past %d hours below %.2fmm limit" %(self.zone, data.prcp.sum(), self.rain_search_hours, self.rain_limit))
         return True
 
     def get_nearby_weather_station(self):
@@ -57,6 +60,52 @@ class Meteostat_Rain_Check(Should_I_Water_Plugin):
         stations = Stations()
         stations = stations.nearby(self.lat, self.lon)
         return stations.fetch(1)
+
+##############################################################################
+# add something like this to config.py
+#
+# is_humidity_low = ('should_i_water_plugins','Meteostat_Humidity_Check',
+#        {'latitude'          : 33.858740179964144,
+#         'longitude'         : -84.2213734421551,
+#         'search_hours'      : 2,
+#         'avg_humidity_below': 95 } )
+#
+# This plugin can be used multiple times if you like. That way you can
+# do things like check the last 8 hours and then check that last 24 hours
+# for a different limit etc.
+# Does a humidity check even make sense? not sure
+class Meteostat_Humidity_Check(Should_I_Water_Plugin):
+    def __init__(self,zone,opts):
+        super().__init__(zone)
+        self.lat = opts["latitude"]
+        self.lon = opts["longitude"]
+        self.search_hours = opts["search_hours"]
+        self.avg_humidity_below = opts["avg_humidity_below"]
+        self.station = self.get_nearby_weather_station()
+
+    def water_now(self):
+        from datetime import datetime, timedelta
+        from meteostat import Hourly
+        start = datetime.now() - timedelta(hours=self.search_hours)
+        end = datetime.now()
+
+        # Get hourly data
+        data = Hourly(self.station, start, end)
+        data = data.fetch()
+        #print(data)
+
+        if (data.rhum.mean() >= self.avg_humidity_below):
+            log.info("%s - average relative humidity of %.2f in past %d hours over limit of %.2f" %(self.zone, data.rhum.mean(), self.search_hours, self.avg_humidity_below))
+            return False
+        log.info("%s - average relative humidity of %.2f in past %d hours below or at limit of %.2f" %(self.zone, data.rhum.mean(), self.search_hours, self.avg_humidity_below))
+        return True
+
+    def get_nearby_weather_station(self):
+        from meteostat import Stations
+        stations = Stations()
+        stations = stations.nearby(self.lat, self.lon)
+        return stations.fetch(1)
+
 
 #################################################################
 # if it's X hours after sunrise and Y hours before sunset, water
@@ -83,18 +132,12 @@ class Sun_Check(Should_I_Water_Plugin):
         self.set_location()
 
     def set_location(self):
-        self.get_timezone()
+        self.tz = helper.get_timezone(self.lat,self.lon)
         from astral import LocationInfo
         self.loc = LocationInfo(name=self.zone,
                    latitude=self.lat,
                    longitude=self.lon,
                    timezone=self.tz)
-
-    def get_timezone(self):
-        import timezonefinder 
-        tf = timezonefinder.TimezoneFinder()
-        timezone_str = tf.certain_timezone_at(lat=self.lat, lng=self.lon)
-        self.tz = timezone_str
 
     def water_now(self):
         import datetime

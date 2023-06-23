@@ -3,6 +3,7 @@ import time
 import logging
 import config
 import sys
+import timezonefinder
 from datetime import timedelta,datetime
 
 logging.basicConfig(level=config.log_level, format=config.log_format)
@@ -33,6 +34,15 @@ class Scheduler_Plugin(object):
     def __init__(self):
         pass
 
+class Helpers(object):
+    '''This is to load really slow libs just once
+    '''
+    def __init__(self):
+        self.tf = timezonefinder.TimezoneFinder()
+    def get_timezone(self,lat,lon):
+        timezone_str = self.tf.certain_timezone_at(lat=lat, lng=lon)
+        return timezone_str
+
 class Zone(object):
     def __init__(self,config):
         self.name = config[0]
@@ -40,8 +50,8 @@ class Zone(object):
         self.scheduler_config = config[2]
         self.should_i_water_config = config[3]
         self.controller = self.load_controller()
-        self.scheduler = self.load_scheduler()
         self.should_i_water_plugins = self.load_should_i_water_plugins()
+        self.scheduler = self.load_scheduler()
 
     def load_controller(self):
         (module_name,class_name,opts) = self.controller_config
@@ -106,7 +116,7 @@ class Water_Controller(object):
         for z_config in self.zone_config:
             z = Zone(z_config)
             self.zones.append(z)
-        log.info("%d zone[s] loaded" % len(self.zones))
+        log.info("%d zone[s] loaded and initialized" % len(self.zones))
 
 class Test_Zone(object):
 
@@ -138,6 +148,7 @@ if __name__== "__main__":
 
     if options.test_zone:
         test = Test_Zone(config.zones, options.test_zone)
+        log.info("zone %s - testing forever" % options.test_zone)
     else:
         wc = Water_Controller(config.zones)
 

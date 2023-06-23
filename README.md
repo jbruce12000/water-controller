@@ -2,7 +2,7 @@
 
 I purchased a cheap hose controller for my garden. It worked ok, but was not flexible enough to do all the things I want. Here are my goals:
 
-* highly scalable to many zones (at least a hundred)
+* highly scalable to many zones (way more than one single board computer can control)
 * each zone can be individually tested to make sure it works
 * flexible system that waters a zone only when wanted or needed
 * plugins for scheduling
