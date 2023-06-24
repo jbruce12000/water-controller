@@ -2,6 +2,10 @@ from water_controller import Scheduler_Plugin, log
 import apscheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 
+import logging
+logging.basicConfig()
+logging.getLogger('apscheduler').setLevel(logging.ERROR)
+
 class Interval(Scheduler_Plugin):
     def __init__(self,zone,opts):
         super().__init__()
