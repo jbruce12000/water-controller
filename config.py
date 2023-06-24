@@ -39,7 +39,11 @@ is_hotest_part_of_day = ('should_i_water_plugins','Sun_Check',
          'start'             : [ 'noon', { 'hours': -1 }],
          'end'               : [ 'noon', { 'hours': +3 }] })
 
+# good for testing
 always_water = ('should_i_water_plugins','Always_Water',{})
+
+# good for disabling watering of a zone, but still making sure
+# the schedule is set correctly
 never_water = ('should_i_water_plugins','Never_Water',{})
 
 should_i_water_plugins1 = [ always_water, is_hotest_part_of_day, rained_lately, is_humidity_low ]
