@@ -6,7 +6,7 @@ I purchased a cheap hose controller for my garden. It worked ok, but was not fle
 * each zone can be individually tested to make sure it works
 * flexible system that waters a zone only when wanted or needed
 * plugins for scheduling
-* plugins for to decide whether to water or not
+* plugins to decide whether to water or not
 * plugins for controllers to turn water on and off 
 
 If you want a web interface with simple configuration, this is not the project for you.
