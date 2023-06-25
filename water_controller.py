@@ -119,7 +119,9 @@ class Water_Controller(object):
         log.info("%d zone[s] loaded and initialized" % len(self.zones))
 
 class Test_Zone(object):
-
+    '''load a single zone, override the schedule for it to turn on for 
+    ten seconds, off for ten seconds... forever.
+    '''
     def __init__(self,zones,zone_name):
         self.zone_config = zones
         self.zone = None
