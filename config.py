@@ -23,8 +23,6 @@ is_humidity_low = ('should_i_water_plugins','Meteostat_Humidity_Check',
          'search_hours'      : 1,
          'avg_humidity_below': 97 } )
 
-
-
 # only water one hour after sunrise to one hour before sundown
 is_sun_up = ('should_i_water_plugins','Sun_Check',
         {'latitude'          : my_lat,
@@ -39,14 +37,21 @@ is_hotest_part_of_day = ('should_i_water_plugins','Sun_Check',
          'start'             : [ 'noon', { 'hours': -1 }],
          'end'               : [ 'noon', { 'hours': +3 }] })
 
+# only water if its above freezing
+is_above_freezing = ('should_i_water_plugins','Meteostat_Temp_Check',
+        {'latitude'          : my_lat,
+         'longitude'         : my_lon,
+         'search_hours'      : 24,
+         'avg_temp_above': 0 } )
+
 # good for testing
 always_water = ('should_i_water_plugins','Always_Water',{})
 
 # good for disabling watering of a zone, but still making sure
-# the schedule is set correctly
+# the schedule is set correctly and all plugins work as expected
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ always_water, is_hotest_part_of_day, rained_lately, is_humidity_low ]
+should_i_water_plugins1 = [ is_above_freezing, is_hotest_part_of_day]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})

@@ -2,6 +2,7 @@ from water_controller import Scheduler_Plugin, log
 import apscheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# apscheduler INFO level is too noisy
 import logging
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.ERROR)

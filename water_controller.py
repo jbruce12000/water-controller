@@ -38,6 +38,8 @@ class Helpers(object):
     '''This is to load really slow libs just once
     '''
     def __init__(self):
+        # timezone finder takes almost a second to load
+        # which is ok for one zone, but not a thousand.
         self.tf = timezonefinder.TimezoneFinder()
     def get_timezone(self,lat,lon):
         timezone_str = self.tf.certain_timezone_at(lat=lat, lng=lon)
@@ -68,7 +70,6 @@ class Zone(object):
         return my_class(self,opts)
 
     def load_should_i_water_plugins(self):
-        #import pdb;pdb.set_trace()
         plugins = []
         if type(self.should_i_water_config) is list:
             for (module_name,class_name,opts) in self.should_i_water_config:

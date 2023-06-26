@@ -106,6 +106,49 @@ class Meteostat_Humidity_Check(Should_I_Water_Plugin):
         stations = stations.nearby(self.lat, self.lon)
         return stations.fetch(1)
 
+##############################################################################
+# add something like this to config.py
+#
+# is_above_freezing = ('should_i_water_plugins','Meteostat_Temp_Check',
+#        {'latitude'          : 33.858740179964144,
+#         'longitude'         : -84.2213734421551,
+#         'search_hours'      : 2,
+#         'avg_temp_above': 0 } )
+#
+# This plugin can be used multiple times if you like. That way you can
+# do things like check the last 8 hours and then check that last 24 hours
+# for a different limit etc.
+class Meteostat_Temp_Check(Should_I_Water_Plugin):
+    def __init__(self,zone,opts):
+        super().__init__(zone)
+        self.lat = opts["latitude"]
+        self.lon = opts["longitude"]
+        self.search_hours = opts["search_hours"]
+        self.avg_temp_above = opts["avg_temp_above"]
+        self.station = self.get_nearby_weather_station()
+
+    def water_now(self):
+        from datetime import datetime, timedelta
+        from meteostat import Hourly
+        start = datetime.now() - timedelta(hours=self.search_hours)
+        end = datetime.now()
+
+        # Get hourly data
+        data = Hourly(self.station, start, end)
+        data = data.fetch()
+        #print(data)
+
+        if (data.temp.mean() > self.avg_temp_above):
+            log.info("%s - average temperature of %.2f in past %d hours over limit of %.2f" %(self.zone, data.temp.mean(), self.search_hours, self.avg_temp_above))
+            return True
+        log.info("%s - average temperature of %.2f in past %d hours below limit of %.2f" %(self.zone, data.temp.mean(), self.search_hours, self.avg_temp_above))
+        return False
+
+    def get_nearby_weather_station(self):
+        from meteostat import Stations
+        stations = Stations()
+        stations = stations.nearby(self.lat, self.lon)
+        return stations.fetch(1)
 
 #################################################################
 # if it's X hours after sunrise and Y hours before sunset, water
