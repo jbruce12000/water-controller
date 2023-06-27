@@ -51,7 +51,7 @@ always_water = ('should_i_water_plugins','Always_Water',{})
 # the schedule is set correctly and all plugins work as expected
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ is_above_freezing, is_hotest_part_of_day]
+should_i_water_plugins1 = [ is_above_freezing, is_sun_up ]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})
@@ -59,32 +59,30 @@ controller1 = ('controller_plugins','Dummy_Controller', {})
 #controller2 = ('blinka','Blinka_GPIO', {'output_pin': board.D23 })
 
 # water every minute for 22 secs between 8am and 3pm
-duration1 = {'seconds' : 22 }
+duration_22s = ('duration_plugins','Static_Duration', {'seconds' : 22 })
 cron1 = {'hour':'8-14', 'minute':'*/1','misfire_grace_time':5 }
 # apscheduler jobs scaling tested with 100 zones
-scheduler1 = ('scheduler_plugins','Cron', duration1, cron1)
+scheduler1 = ('scheduler_plugins','Cron', cron1)
 
 # water every 5 minutes for 15 secs between 3pm and midnight
-duration2 = {'seconds' : 15 }
+duration_15s = ('duration_plugins','Static_Duration',{'seconds' : 15 })
 cron2 = { 'hour':'15-23', 'minute':'*/1','misfire_grace_time':5 }
-scheduler2 = ('scheduler_plugins','Cron', duration2, cron2)
+scheduler2 = ('scheduler_plugins','Cron', cron2)
 
 # complex cron schedule
 # water every 2 minutes for 15 secs between 12pm and 3pm and
 # water every 5 minutes for 15 secs between 3pm and midnight
 multi_cron = [cron1, cron2]
-schedule3 = ('scheduler_plugins','Cron', duration2, multi_cron) 
+schedule3 = ('scheduler_plugins','Cron', multi_cron) 
 
 # water every minute for 10 secs
-every_minute = ('scheduler_plugins','Interval', 
-        { 'seconds' : 10 },
-        { 'minutes' : 1 })
+every_minute = ('scheduler_plugins','Interval',{ 'minutes' : 1 })
 
 #scheduler2 = ('dummy_scheduler_plugin','Dummy_Scheduler', {})
 
-zones = [ ('box1',controller1, schedule3, should_i_water_plugins1), 
-          ('box2',controller1, schedule3, should_i_water_plugins2), 
-          ('box3',controller1, every_minute, is_sun_up), 
+zones = [ ('box1',controller1,schedule3,duration_15s,should_i_water_plugins1), 
+          ('box2',controller1,schedule3,duration_15s,should_i_water_plugins2), 
+          ('box3',controller1,every_minute,duration_22s,is_sun_up), 
         ]
 
 #zones = [ ('box1',controller1, scheduler1, should_i_water_plugins1) ]

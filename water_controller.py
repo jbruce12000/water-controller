@@ -34,6 +34,14 @@ class Scheduler_Plugin(object):
     def __init__(self):
         pass
 
+class Duration_Plugin(object):
+    def __init__(self,zone):
+        self.zone = zone
+    def duration(self):
+        # children must implement this
+        # must return a datetime.timedelta
+        pass
+
 class Helpers(object):
     '''This is to load really slow libs just once
     '''
@@ -50,10 +58,12 @@ class Zone(object):
         self.name = config[0]
         self.controller_config = config[1]
         self.scheduler_config = config[2]
-        self.should_i_water_config = config[3]
+        self.duration_config = config[3]
+        self.should_i_water_config = config[4]
         self.controller = self.load_controller()
         self.should_i_water_plugins = self.load_should_i_water_plugins()
         self.scheduler = self.load_scheduler()
+        self.duration_plugin = self.load_duration()
 
     def load_controller(self):
         (module_name,class_name,opts) = self.controller_config
@@ -62,11 +72,15 @@ class Zone(object):
         return my_class(self,opts)
 
     def load_scheduler(self):
-        (module_name,class_name,duration,opts) = self.scheduler_config
+        (module_name,class_name,opts) = self.scheduler_config
         my_module = __import__(module_name)
         my_class = getattr(my_module, class_name)
-        self.duration = duration
-        #return my_class(self.water_on,opts)
+        return my_class(self,opts)
+
+    def load_duration(self):
+        (module_name,class_name,opts) = self.duration_config
+        my_module = __import__(module_name)
+        my_class = getattr(my_module, class_name)
         return my_class(self,opts)
 
     def load_should_i_water_plugins(self):
@@ -96,8 +110,8 @@ class Zone(object):
             log.info("%s - water skipping" % self)
             return
         self.controller.water_on()
-        log.info("%s - duration=%ds" % (self,timedelta(**self.duration).seconds))
-        time.sleep(timedelta(**self.duration).seconds)
+        log.info("%s - duration=%ds" % (self,self.duration_plugin.duration().seconds))
+        time.sleep(self.duration_plugin.duration().seconds)
         self.water_off()
 
     def water_off(self):
