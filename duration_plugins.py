@@ -10,3 +10,7 @@ class Static_Duration(Duration_Plugin):
         
     def duration(self):
         return datetime.timedelta(**self.opts)
+
+# interesting to have a flow measurement where it reads the flow
+# and sets a time based on flow. this way you could pass in the
+# number of liters or gallons of water.

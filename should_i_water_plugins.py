@@ -17,6 +17,30 @@ class Never_Water(Should_I_Water_Plugin):
         log.info("%s - never water" % (self.zone))
         return False
 
+class Tank_Check(Should_I_Water_Plugin):
+    '''
+    See if water storage tank to see if has any water in it.
+    This could be used to read water level or a read from a float.
+    '''
+    def __init__(self,zone,opts):
+        import board
+        import digitalio
+        self.name = opts["name"]
+        self.gpio_pin = opts["input_pin"]
+        self.gpio = digitalio.DigitalInOut(self.gpio_pin)
+        self.gpio.direction = digitalio.Direction.INPUT
+        # not sure about this UP or DOWN?
+        self.gpio.pull = digitalio.Pull.UP
+        super().__init__(zone)
+    def water_now(self):
+        if self.gpio.value == 1:
+            log.info("%s - tank check: %s - tank has water" % (self.zone, self.name))
+            return True
+        if self.gpio.value == 0:
+            log.info("%s - tank check: %s - tank is low" % (self.zone, self.name))
+        return False
+
+
 ##############################################################################
 # add something like this to config.py
 #

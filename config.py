@@ -1,4 +1,5 @@
 import logging
+import board
 
 log_level = logging.INFO
 log_format = '%(asctime)s %(levelname)s %(name)s: %(message)s'
@@ -44,6 +45,11 @@ is_above_freezing = ('should_i_water_plugins','Meteostat_Temp_Check',
          'search_hours'      : 24,
          'avg_temp_above': 0 } )
 
+# check if a storage tank has water
+#storage_tank1_has_water = ('should_i_water_plugins','Tank_Check',
+#        {'name'              : 'rain-storage-1',
+#         'input_pin'         : board.D22 })
+
 # good for testing
 always_water = ('should_i_water_plugins','Always_Water',{})
 
@@ -51,11 +57,10 @@ always_water = ('should_i_water_plugins','Always_Water',{})
 # the schedule is set correctly and all plugins work as expected
 never_water = ('should_i_water_plugins','Never_Water',{})
 
-should_i_water_plugins1 = [ is_above_freezing, is_sun_up ]
+should_i_water_plugins1 = [ is_above_freezing, is_hotest_part_of_day ]
 should_i_water_plugins2 = [ always_water, never_water ]
 
 controller1 = ('controller_plugins','Dummy_Controller', {})
-#import board
 #controller2 = ('blinka','Blinka_GPIO', {'output_pin': board.D23 })
 
 # water every minute for 22 secs between 8am and 3pm
@@ -84,5 +89,3 @@ zones = [ ('box1',controller1,schedule3,duration_15s,should_i_water_plugins1),
           ('box2',controller1,schedule3,duration_15s,should_i_water_plugins2), 
           ('box3',controller1,every_minute,duration_22s,is_sun_up), 
         ]
-
-#zones = [ ('box1',controller1, scheduler1, should_i_water_plugins1) ]
