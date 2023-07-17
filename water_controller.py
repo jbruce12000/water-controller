@@ -133,6 +133,13 @@ class Water_Controller(object):
             self.zones.append(z)
         log.info("%d zone[s] loaded and initialized" % len(self.zones))
 
+    def stop(self):
+        log.info("stopped watering all zones. exiting as requested.")
+        # probably need to stop each schedule then stop watering of all zones
+        # or never load schedule in the first place
+        sys.exit()
+
+
 class Test_Zone(object):
     '''load a single zone, override the schedule for it to turn on for 
     ten seconds, off for ten seconds... forever.
@@ -161,6 +168,9 @@ if __name__== "__main__":
     parser = optparse.OptionParser("usage: water-controller.py --test zone_name")
     parser.add_option("-t", "--test", dest="test_zone",
         type="string", help="zone name to test. on 10s then off 10s forever.")
+    parser.add_option("-s", "--stop",
+                  action="store_true", dest="stop", default=False,
+                  help="stop watering all zones")
     (options, args) = parser.parse_args()
 
     if options.test_zone:
@@ -168,6 +178,9 @@ if __name__== "__main__":
         log.info("zone %s - testing forever" % options.test_zone)
     else:
         wc = Water_Controller(config.zones)
+    
+    if options.stop == True:
+        wc.stop() 
 
     while True:
       time.sleep(1)
